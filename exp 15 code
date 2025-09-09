@@ -1,0 +1,70 @@
+import math
+
+# Calculate entropy
+def entropy(data, target_attr):
+    values = [record[target_attr] for record in data]
+    classes = set(values)
+    ent = 0
+    for c in classes:
+        p = values.count(c) / len(values)
+        ent -= p * math.log2(p)
+    return ent
+
+# Calculate information gain
+def info_gain(data, attr, target_attr):
+    values = [record[attr] for record in data]
+    unique_vals = set(values)
+    subset_entropy = 0
+    for val in unique_vals:
+        subset = [record for record in data if record[attr] == val]
+        subset_entropy += (len(subset) / len(data)) * entropy(subset, target_attr)
+    return entropy(data, target_attr) - subset_entropy
+
+# ID3 Algorithm
+def id3(data, attributes, target_attr):
+    values = [record[target_attr] for record in data]
+    if values.count(values[0]) == len(values):  # all same class
+        return values[0]
+    if not attributes:  # no more attributes
+        return max(set(values), key=values.count)
+
+    # choose best attribute
+    gains = [info_gain(data, attr, target_attr) for attr in attributes]
+    best_attr = attributes[gains.index(max(gains))]
+
+    tree = {best_attr: {}}
+    unique_vals = set(record[best_attr] for record in data)
+
+    for val in unique_vals:
+        subset = [record for record in data if record[best_attr] == val]
+        new_attrs = [a for a in attributes if a != best_attr]
+        tree[best_attr][val] = id3(subset, new_attrs, target_attr)
+
+    return tree
+
+
+# Example dataset (Play Tennis)
+dataset = [
+    {"Outlook":"Sunny", "Temp":"Hot", "Humidity":"High", "Wind":"Weak", "Play":"No"},
+    {"Outlook":"Sunny", "Temp":"Hot", "Humidity":"High", "Wind":"Strong", "Play":"No"},
+    {"Outlook":"Overcast", "Temp":"Hot", "Humidity":"High", "Wind":"Weak", "Play":"Yes"},
+    {"Outlook":"Rain", "Temp":"Mild", "Humidity":"High", "Wind":"Weak", "Play":"Yes"},
+    {"Outlook":"Rain", "Temp":"Cool", "Humidity":"Normal", "Wind":"Weak", "Play":"Yes"},
+    {"Outlook":"Rain", "Temp":"Cool", "Humidity":"Normal", "Wind":"Strong", "Play":"No"},
+    {"Outlook":"Overcast", "Temp":"Cool", "Humidity":"Normal", "Wind":"Strong", "Play":"Yes"},
+    {"Outlook":"Sunny", "Temp":"Mild", "Humidity":"High", "Wind":"Weak", "Play":"No"},
+    {"Outlook":"Sunny", "Temp":"Cool", "Humidity":"Normal", "Wind":"Weak", "Play":"Yes"},
+    {"Outlook":"Rain", "Temp":"Mild", "Humidity":"Normal", "Wind":"Weak", "Play":"Yes"},
+]
+
+attributes = ["Outlook", "Temp", "Humidity", "Wind"]
+
+# Build decision tree
+tree = id3(dataset, attributes, "Play")
+
+print("Decision Tree:")
+print(tree)
+
+
+
+
