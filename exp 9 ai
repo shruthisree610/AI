@@ -1,0 +1,38 @@
+import itertools
+
+# Distance matrix between cities (symmetric)
+# Example: 4 cities
+distance_matrix = [
+    [0, 10, 15, 20],
+    [10, 0, 35, 25],
+    [15, 35, 0, 30],
+    [20, 25, 30, 0]
+]
+
+def calculate_path_cost(path, matrix):
+    cost = 0
+    for i in range(len(path) - 1):
+        cost += matrix[path[i]][path[i + 1]]
+    cost += matrix[path[-1]][path[0]]  # Return to start
+    return cost
+
+def tsp_brute_force(matrix):
+    n = len(matrix)
+    cities = list(range(n))
+    min_cost = float('inf')
+    best_path = []
+
+    for perm in itertools.permutations(cities):
+        cost = calculate_path_cost(perm, matrix)
+        if cost < min_cost:
+            min_cost = cost
+            best_path = perm
+
+    return best_path, min_cost
+
+# Run the TSP solver
+path, cost = tsp_brute_force(distance_matrix)
+
+# Display results
+print("Optimal Path:", " -> ".join(map(str, path)) + f" -> {path[0]}")
+print("Minimum Cost:", cost)
