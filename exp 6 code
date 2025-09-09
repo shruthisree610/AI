@@ -1,0 +1,25 @@
+def vacuum_cleaner(room, pos):
+    steps = []
+    while "Dirty" in room.values():
+        if room[pos] == "Dirty":
+            steps.append(f"Clean {pos}")
+            room[pos] = "Clean"
+        else:
+            # Move to the other room
+            if pos == "Left":
+                steps.append("Move Right")
+                pos = "Right"
+            else:
+                steps.append("Move Left")
+                pos = "Left"
+    return steps
+
+# Example rooms: both start dirty
+room = {"Left": "Dirty", "Right": "Dirty"}
+start_pos = "Left"
+
+steps = vacuum_cleaner(room, start_pos)
+
+print("Steps taken by Vacuum Cleaner:")
+for s in steps:
+    print(s)
