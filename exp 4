@@ -1,0 +1,30 @@
+import itertools
+def solve_cryptarithmetic():
+    # Example puzzle: SEND + MORE = MONEY
+    letters = 'SENDMORY'
+    digits = '0123456789'
+    # Generate all possible assignments of digits to letters
+    for perm in itertools.permutations(digits, len(letters)):
+        assign = dict(zip(letters, perm))
+
+        # Skip if leading letters are zero
+        if assign['S'] == '0' or assign['M'] == '0':
+            continue
+
+        # Convert words to numbers
+        send = int("".join(assign[c] for c in "SEND"))
+        more = int("".join(assign[c] for c in "MORE"))
+        money = int("".join(assign[c] for c in "MONEY"))
+
+        # Check equation
+        if send + more == money:
+            print("✅ Solution Found!")
+            print(f"SEND = {send}")
+            print(f"MORE = {more}")
+            print(f"MONEY = {money}")
+            return
+
+    print("❌ No solution found.")
+
+if __name__ == "__main__":
+    solve_cryptarithmetic()
